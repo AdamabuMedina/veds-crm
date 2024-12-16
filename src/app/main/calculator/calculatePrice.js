@@ -1,4 +1,4 @@
-import prices from "@/lib/prices"
+import { prices } from "@/lib/prices"
 
 const calculatePrice = ({ density, category, period }) => {
 	const densityValue = parseFloat(density)

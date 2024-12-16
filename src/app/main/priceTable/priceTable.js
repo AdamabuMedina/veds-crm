@@ -5,7 +5,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table"
-import prices from "@/lib/prices"
+import { prices } from "../../../lib/prices"
 import PriceCaption from "./priceCaption"
 
 const PriceTable = () => {

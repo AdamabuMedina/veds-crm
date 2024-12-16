@@ -1,5 +1,10 @@
 import { AppSidebar } from "@/components/sidebar/app-sidebar"
-import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { Separator } from "@/components/ui/separator"
+import {
+	SidebarInset,
+	SidebarProvider,
+	SidebarTrigger,
+} from "@/components/ui/sidebar"
 import { cookies } from "next/headers"
 
 const DashboardLayout = async ({ children }) => {
@@ -9,10 +14,13 @@ const DashboardLayout = async ({ children }) => {
 	return (
 		<SidebarProvider defaultOpen={defaultOpen}>
 			<AppSidebar />
-			<main>
-				<SidebarTrigger />
-				{children}
-			</main>
+			<SidebarInset>
+				<Separator orientation="vertical" className="mr-2 h-4" />
+				<main>
+					<SidebarTrigger />
+					{children}
+				</main>
+			</SidebarInset>
 		</SidebarProvider>
 	)
 }

@@ -1,4 +1,4 @@
-const prices = [
+export const prices = [
 	{ range: [901, 1000], goods: [1.6, 1.4], clothes: [null, null] },
 	{ range: [801, 900], goods: [1.7, 1.5], clothes: [null, null] },
 	{ range: [601, 800], goods: [1.8, 1.6], clothes: [null, null] },
@@ -19,8 +19,6 @@ const prices = [
 	{ range: [111, 120], goods: [3.3, 3.1], clothes: [4.5, 4.3] },
 	{ range: [100, 110], goods: [3.4, 3.2], clothes: [4.6, 4.4] },
 ]
-
-export default prices
 
 // export const updatedPrices = prices.map(item => ({
 // 	...item,
