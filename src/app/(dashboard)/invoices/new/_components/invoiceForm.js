@@ -271,10 +271,11 @@ const InvoiceForm = ({
 				/>
 			</div>
 
-			<div className="grid grid-cols-3 gap-4 mt-8 mb-4">
+			<div className="grid grid-cols-2 gap-4 mt-8 mb-4">
 				<Button type="submit" onClick={handlePreviewInvoice}>
 					Посмотреть счет
 				</Button>
+				<Button type="submit">Сохранить счет</Button>
 			</div>
 		</form>
 	)

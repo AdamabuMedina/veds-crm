@@ -1,5 +1,5 @@
+import { decimal } from "drizzle-orm/mysql-core"
 import {
-	decimal,
 	integer,
 	jsonb,
 	pgEnum,
