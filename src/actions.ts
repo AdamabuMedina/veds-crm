@@ -1,33 +1,33 @@
 "use server"
 
+import { db } from "@/db"
+import { redirect } from "next/navigation"
+import { Invoices } from "./db/schema"
+
 function prepareInvoiceData(formData: FormData, picturePath: string | null) {
 	return {
-		clientName: formData.get("clientName") as string,
-		// clientName: String(formData.get("clientName")), // Преобразуем в строку
-		// commission: parseFloat(String(formData.get("commission"))), // Преобразуем в число с плавающей точкой
-		// manager: String(formData.get("manager")), // Преобразуем в строку
-		// invoiceNumber: String(formData.get("invoiceNumber")), // Преобразуем в строку
-		// invoiceDate: new Date(String(formData.get("invoiceDate"))), // Преобразуем в объект Date
-		// yuanRate: parseFloat(String(formData.get("yuanRate"))), // Преобразуем в число
-		// productName: String(formData.get("productName")), // Преобразуем в строку
-		// productCount: parseInt(String(formData.get("productCount")), 10), // Преобразуем в целое число
-		// unitPrice: parseFloat(String(formData.get("unitPrice"))), // Преобразуем в число
-		// marking: String(formData.get("marking")), // Преобразуем в строку
-		// delivery: parseFloat(String(formData.get("delivery"))), // Преобразуем в число
-		// picture: picturePath, // Путь к картинке
-		// totalCommission: parseFloat(String(formData.get("totalCommission"))), // Преобразуем в число
-		// totalYuan: parseFloat(String(formData.get("totalYuan"))), // Преобразуем в число
-		// totalRub: parseFloat(String(formData.get("totalRub"))), // Преобразуем в число
-		// notes: formData.get("notes") ? String(formData.get("notes")) : null, // Преобразуем в строку или null
-		// status: "не оплачено", // Предопределенное значение для статуса
-		// items: formData.get("items")
-		// ? JSON.parse(String(formData.get("items")))
-		// 	: {}, // Преобразуем в JSON или пустой объект
+		clientName: String(formData.get("clientName")),
+		invoiceDate: new Date(String(formData.get("invoiceDate"))),
+		commission: parseFloat(String(formData.get("commission"))),
+		manager: String(formData.get("manager")),
+		invoiceNumber: String(formData.get("invoiceNumber")),
+		yuanRate: parseFloat(String(formData.get("yuanRate"))),
+		productName: String(formData.get("productName")),
+		productCount: parseInt(String(formData.get("productCount")), 10),
+		unitPrice: parseFloat(String(formData.get("unitPrice"))),
+		marking: String(formData.get("marking")),
+		delivery: parseFloat(String(formData.get("delivery"))),
+		picture: picturePath,
+		totalCommission: parseFloat(String(formData.get("totalCommission"))),
+		totalYuan: parseFloat(String(formData.get("totalYuan"))),
+		totalRub: parseFloat(String(formData.get("totalRub"))),
+		notes: formData.get("notes") ? String(formData.get("notes")) : null,
+		status: "не оплачено",
+		items: formData.get("items")
+			? JSON.parse(String(formData.get("items")))
+			: {},
 	}
 }
-
-import { db } from "@/db"
-import { Invoices } from "./db/schema"
 
 export async function createAction(formData: FormData) {
 	try {
@@ -55,12 +55,11 @@ export async function createAction(formData: FormData) {
 		const invoiceData = prepareInvoiceData(formData, picturePath)
 
 		// Вставляем данные в базу
-		await db.insert(Invoices).values(invoiceData)
+		const results = await db.insert(Invoices).values(invoiceData).returning({
+			id: Invoices.id,
+		})
 
-		return {
-			success: true,
-			message: "Данные успешно сохранены.",
-		}
+		redirect(`/invoices/${results[0].id}`)
 	} catch (error) {
 		console.error("Ошибка при сохранении данных:", error)
 		return {
