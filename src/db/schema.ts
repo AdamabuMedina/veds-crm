@@ -26,7 +26,7 @@ export const Invoices = pgTable("invoices", {
 	invoiceDate: timestamp("invoiceDate").notNull().defaultNow(),
 	commission: decimal("commission", { precision: 10, scale: 2 }),
 	manager: varchar("manager", { length: 255 }).notNull(),
-	invoiceNumber: varchar("invoiceNumber", { length: 255 }).notNull(),
+	invoiceNumber: varchar("invoiceNumber", { length: 255 }).notNull().unique(),
 	yuanRate: decimal("yuanRate", { precision: 10, scale: 2 }),
 	productName: varchar("productName", { length: 255 }).notNull(),
 	productCount: integer("productCount").notNull(),

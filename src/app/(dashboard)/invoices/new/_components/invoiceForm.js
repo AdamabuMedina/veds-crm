@@ -1,7 +1,5 @@
 "use client"
 
-import { createAction } from "@/actions"
-// import { createAction } from "@/actions"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -20,14 +18,16 @@ import { PencilIcon, TrashIcon } from "lucide-react"
 const InvoiceForm = ({
 	data,
 	handleChange,
-	handleSubmit,
-	handleDelete,
-	handleEdit,
+	itemSubmit,
+	itemDelete,
+	itemEdit,
 	handlePreviewInvoice,
 	fileInputRef,
+	createAction,
+	handleOnSubmit,
 }) => {
 	return (
-		<form action={createAction}>
+		<form action={createAction} onSubmit={handleOnSubmit}>
 			<h2 className="text-slate-900 font-bold text-xl mb-4">
 				Информация о клиенте
 			</h2>
@@ -223,7 +223,7 @@ const InvoiceForm = ({
 				</div>
 			</div>
 			<div className="grid grid-cols-3 gap-4 mt-8 mb-4">
-				<Button variant="outline" onClick={handleSubmit}>
+				<Button variant="outline" onClick={itemSubmit}>
 					Добавить товар
 				</Button>
 			</div>
@@ -243,14 +243,14 @@ const InvoiceForm = ({
 						<div>
 							<ul className="flex gap-4">
 								<li>
-									<Button variant="outline" onClick={() => handleEdit(item.id)}>
+									<Button variant="outline" onClick={() => itemEdit(item.id)}>
 										<PencilIcon />
 									</Button>
 								</li>
 								<li>
 									<Button
 										variant="destructive"
-										onClick={() => handleDelete(item.id)}
+										onClick={() => itemDelete(item.id)}
 									>
 										<TrashIcon />
 									</Button>

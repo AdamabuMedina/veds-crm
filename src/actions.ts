@@ -30,41 +30,26 @@ function prepareInvoiceData(formData: FormData, picturePath: string | null) {
 }
 
 export async function createAction(formData: FormData) {
-	try {
-		const data: Record<string, any> = {}
-		formData.forEach((value, key) => {
-			data[key] = value
-		})
+	// Логика обработки формы
+	const pictureFile = formData.get("picture") as File | null
 
-		// Получаем файл из формы
-		const pictureFile = formData.get("picture") as File | null
+	let picturePath = null
+	if (pictureFile) {
+		const fileName = `${Date.now()}_${pictureFile.name}`
+		const fileBuffer = Buffer.from(await pictureFile.arrayBuffer())
+		const filePath = `./public/uploads/${fileName}`
+		require("fs").writeFileSync(filePath, fileBuffer)
 
-		// Обрабатываем файл, если он есть
-		let picturePath = null
-		if (pictureFile) {
-			const fileName = `${Date.now()}_${pictureFile.name}`
-			const fileBuffer = Buffer.from(await pictureFile.arrayBuffer())
-			const filePath = `./public/uploads/${fileName}` // Путь для сохранения
-			require("fs").writeFileSync(filePath, fileBuffer)
-
-			// Сохраняем путь до файла
-			picturePath = `/uploads/${fileName}`
-		}
-
-		// Приводим данные к структуре InvoiceData
-		const invoiceData = prepareInvoiceData(formData, picturePath)
-
-		// Вставляем данные в базу
-		const results = await db.insert(Invoices).values(invoiceData).returning({
-			id: Invoices.id,
-		})
-
-		redirect(`/invoices/${results[0].id}`)
-	} catch (error) {
-		console.error("Ошибка при сохранении данных:", error)
-		return {
-			success: false,
-			message: "Произошла ошибка при сохранении данных.",
-		}
+		picturePath = `/uploads/${fileName}`
 	}
+
+	const invoiceData = prepareInvoiceData(formData, picturePath)
+
+	// Сохранение данных в базу
+	const results = await db.insert(Invoices).values(invoiceData).returning({
+		id: Invoices.id,
+	})
+
+	// Перенаправление
+	redirect(`/invoices/${results[0].id}`)
 }

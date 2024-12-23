@@ -1,5 +1,6 @@
 "use client"
 
+import { createAction } from "@/actions"
 import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
 import { useEffect, useRef, useState } from "react"
@@ -10,6 +11,8 @@ import InvoiceForm from "./_components/invoiceForm"
 import PreviewInvoice from "./_components/previewInvoice"
 
 const NewInvoice = () => {
+	const fileInputRef = useRef(null)
+	const invoiceRef = useRef(null)
 	const [data, setFormData] = useState({
 		clientName: "",
 		commission: 0,
@@ -31,42 +34,9 @@ const NewInvoice = () => {
 		isEditing: false,
 		totalAmount: 0,
 		previewInvoice: false,
+		state: "ready",
 	})
 
-	const fileInputRef = useRef(null)
-
-	const resetProductFields = () => {
-		setFormData(prev => ({
-			...prev,
-			productName: "",
-			productCount: 0,
-			unitPrice: 0,
-			marking: "",
-			delivery: 0,
-			picture: null,
-		}))
-	}
-	const invoiceRef = useRef(null)
-
-	const handlePrint = useReactToPrint({
-		content: () => document.getElementById("pdf"),
-		contentRef: invoiceRef,
-		onAfterPrint: () =>
-			setFormData(prev => ({ ...prev, previewInvoice: false })),
-		documentTitle: `${data.clientName}-${data.invoiceNumber}`,
-	})
-
-	// Обработка изменений в инпутах
-	const handleChange = e => {
-		const { id, value, type, files } = e.target
-		setFormData(prev => ({
-			...prev,
-			[id]:
-				type === "file" && files.length ? URL.createObjectURL(files[0]) : value,
-		}))
-	}
-
-	// Расчеты
 	useEffect(() => {
 		const totalYuan = data.productCount * data.unitPrice + Number(data.delivery)
 
@@ -94,8 +64,51 @@ const NewInvoice = () => {
 		data.items,
 	])
 
+	const resetProductFields = () => {
+		setFormData(prev => ({
+			...prev,
+			productName: "",
+			productCount: 0,
+			unitPrice: 0,
+			marking: "",
+			delivery: 0,
+			picture: null,
+		}))
+	}
+
+	const handleOnSubmit = async e => {
+		e.preventDefault()
+		if (state === "pending") return
+		const target = e.target
+		const formData = new FormData(target)
+		await createAction(formData)
+		setFormData(prev => ({
+			...prev,
+			state: "pending",
+		}))
+		console.log("hey")
+	}
+
+	const handlePrint = useReactToPrint({
+		content: () => document.getElementById("pdf"),
+		contentRef: invoiceRef,
+		onAfterPrint: () =>
+			setFormData(prev => ({ ...prev, previewInvoice: false })),
+		documentTitle: `${data.clientName}-${data.invoiceNumber}`,
+	})
+
+	// Обработка изменений в инпутах
+	const handleChange = e => {
+		const { id, value, type, files } = e.target
+		setFormData(prev => ({
+			...prev,
+			[id]:
+				type === "file" && files.length ? URL.createObjectURL(files[0]) : value,
+		}))
+	}
+
 	// Обработка отправки формы
-	const handleSubmit = e => {
+	const itemSubmit = e => {
 		e.preventDefault()
 		if (!data.productName || !data.unitPrice || !data.productCount) {
 		} else {
@@ -125,22 +138,15 @@ const NewInvoice = () => {
 		}
 	}
 
-	const handlePreviewInvoice = () => {
-		setFormData(prev => ({
-			...prev,
-			previewInvoice: !prev.previewInvoice, // Переключает true/false
-		}))
-	}
-
 	//delete function
-	const handleDelete = id => {
+	const itemDelete = id => {
 		setFormData(prev => ({
 			...prev,
 			items: prev.items.filter(item => item.id !== id),
 		}))
 	}
 
-	const handleEdit = id => {
+	const itemEdit = id => {
 		const itemToEdit = data.items.find(item => item.id === id)
 		setFormData(prev => ({
 			...prev,
@@ -154,6 +160,13 @@ const NewInvoice = () => {
 			delivery: itemToEdit.delivery,
 		}))
 	}
+
+	const handlePreviewInvoice = () => {
+		setFormData(prev => ({
+			...prev,
+			previewInvoice: !prev.previewInvoice, // Переключает true/false
+		}))
+	}
 	return (
 		<div className="px-4 sm:px-6 lg:px-8">
 			<header className="flex h-16 shrink-0 items-center justify-between gap-2 border-b">
@@ -165,11 +178,13 @@ const NewInvoice = () => {
 						<InvoiceForm
 							data={data}
 							handleChange={handleChange}
-							handleSubmit={handleSubmit}
-							handleDelete={handleDelete}
-							handleEdit={handleEdit}
+							itemSubmit={itemSubmit}
+							itemDelete={itemDelete}
+							itemEdit={itemEdit}
 							handlePreviewInvoice={handlePreviewInvoice}
+							createAction={createAction}
 							fileInputRef={fileInputRef}
+							handleOnSubmit={handleOnSubmit}
 						/>
 					</div>
 					<div>

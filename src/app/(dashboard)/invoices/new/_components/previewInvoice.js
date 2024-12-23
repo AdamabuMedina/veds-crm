@@ -28,7 +28,7 @@ const PreviewInvoice = ({ data, logo, invoiceRef }) => {
 				<article className="text-right">
 					<p>
 						<span className="text-slate-800 font-bold">Номер счета:</span>{" "}
-						{data.invoiceNumber}
+						{`INV-${data.clientName}-${data.invoiceNumber}`}
 					</p>
 					<p>
 						<span className="text-slate-800 font-bold">Дата счета:</span>{" "}
